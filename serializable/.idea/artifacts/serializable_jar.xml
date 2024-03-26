@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="serializable:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/serializable_jar</output-path>
+    <root id="archive" name="serializable.jar">
+      <element id="module-output" name="serializable" />
+      <element id="module-source" name="serializable" />
+      <element id="library" level="project" name="jbcrypt-0.4" />
+    </root>
+  </artifact>
+</component>
