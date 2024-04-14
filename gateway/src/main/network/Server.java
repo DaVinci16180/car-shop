@@ -17,8 +17,9 @@ public class Server implements Runnable{
 
     private final ServerSocket serverSocket;
     private final RequestHandler handler = RequestHandler.getInstance();
+    public static final int port = 8080;
 
-    public Server(int port) throws IOException {
+    public Server() throws IOException {
         serverSocket = new ServerSocket(port);
     }
 

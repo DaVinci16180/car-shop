@@ -10,10 +10,12 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 
 public class RSAServer implements Runnable {
+
     private static final KeyPair keyPair = CryptographyService.generateKeyPair();
     private final ServerSocket serverSocket;
+    public static final int port = 8081;
 
-    public RSAServer(int port) throws IOException {
+    public RSAServer() throws IOException {
         serverSocket = new ServerSocket(port);
     }
 

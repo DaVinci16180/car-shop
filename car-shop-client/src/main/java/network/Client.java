@@ -28,7 +28,7 @@ public class Client {
 
     public Response execute(Request request, boolean sign) {
         verifyServerKey();
-        try(Socket socket = new Socket("0.0.0.0", 8080)) {
+        try(Socket socket = new Socket(DiscoveryClient.serverAddress, DiscoveryClient.serverPort)) {
             if (sign && storage.hmac == null) {
                 storage.error = true;
                 throw new SecurityException("Chave de acesso (Hmac) não configurada.");
@@ -74,7 +74,7 @@ public class Client {
 
     private void verifyServerKey() {
         if (storage.serverPublicKey == null) {
-            try (Socket socket = new Socket("0.0.0.0", 8081);
+            try (Socket socket = new Socket(DiscoveryClient.serverAddress, DiscoveryClient.rsaServerPort);
                 ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
                 storage.serverPublicKey = (PublicKey) inputStream.readObject();
             } catch (IOException | ClassNotFoundException e) {
