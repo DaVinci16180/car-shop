@@ -35,6 +35,7 @@ public class LocalStorage {
     public void clearSession() {
         this.token = null;
         this.userName = null;
+        this.hmac = null;
     }
 
     public void resetError() {

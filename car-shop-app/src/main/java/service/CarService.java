@@ -19,10 +19,6 @@ public class CarService {
 
     CarRepository carRepository = CarRepository.getInstance();
 
-    public void save(Car car) {
-        carRepository.save(car);
-    }
-
     public Map<String, Object> findById_convertToMap(int id) {
         Car car = carRepository.findById(id);
         return carToMap(car);

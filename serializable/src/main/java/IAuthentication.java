@@ -1,12 +1,13 @@
 package src.main.java;
 
 import javax.crypto.SecretKey;
+import java.nio.file.AccessDeniedException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Map;
 
 public interface IAuthentication extends Remote {
-    String signIn(String username, String password) throws RemoteException;
+    String signIn(String username, String password) throws RemoteException, AccessDeniedException;
 
     String signUp(String username, String password, String name) throws RemoteException;
 
@@ -19,4 +20,6 @@ public interface IAuthentication extends Remote {
     SecretKey getHmac(String token) throws RemoteException;
 
     Map<String, String> getUserData(String token) throws RemoteException;
+
+    boolean checkSign(String sign, Object message, String token) throws RemoteException;
 }

@@ -7,16 +7,16 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-public class DataBase {
+public class Storage {
 
-    private DataBase() {}
+    private Storage() {}
 
     private static final class InstanceHolder {
-        private static final DataBase instance = new DataBase();
+        private static final Storage instance = new Storage();
     }
 
-    public static DataBase getInstance() {
-        return DataBase.InstanceHolder.instance;
+    public static Storage getInstance() {
+        return Storage.InstanceHolder.instance;
     }
 
     Set<User> users = new HashSet<>();
@@ -33,8 +33,8 @@ public class DataBase {
                 .findFirst();
     }
 
-    public User saveSession(String token, User user) {
-        return sessions.put(token, user);
+    public void saveSession(String token, User user) {
+        sessions.put(token, user);
     }
 
     public User getSession(String token) {

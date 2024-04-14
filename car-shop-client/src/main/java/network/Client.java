@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.security.Key;
 import java.security.PublicKey;
 
 public class Client {
@@ -20,7 +19,6 @@ public class Client {
     }
 
     public static Client getInstance() {
-
         return Client.InstanceHolder.instance;
     }
 

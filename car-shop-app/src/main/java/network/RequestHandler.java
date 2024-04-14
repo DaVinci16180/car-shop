@@ -1,10 +1,7 @@
 package network;
 
-import src.main.java.CryptographyService;
-import repository.CarRepository;
 import network.annotations.Controller;
 import network.annotations.Path;
-import src.main.java.IAuthentication;
 import src.main.java.Request;
 import src.main.java.Response;
 
@@ -12,11 +9,10 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class RequestHandler {
@@ -35,12 +31,6 @@ public class RequestHandler {
     }
 
     private final Map<String, Class<?>> controllers = new HashMap<>();
-    private final Set<String> bypassHmac = new HashSet<>(); {
-        bypassHmac.add("auth/register");
-        bypassHmac.add("auth/configureHmac"); // Apenas para depuração
-    }
-
-    private final CarRepository carRepository = CarRepository.getInstance();
 
     public Response handle(Request request) {
         String[] path = request.getPath().split("/");
@@ -53,15 +43,6 @@ public class RequestHandler {
                     .filter(m -> m.getAnnotation(Path.class).value().equals(path[1]))
                     .findFirst()
                     .orElseThrow();
-
-            boolean valid = validateSession(method, request);
-//            boolean whole = checkIntegrity(request);
-
-            if (!(valid)) {
-                response.addBody("success", false);
-                response.addBody("message", "Acesso negado!");
-                return response;
-            }
 
             Object instance = clazz.getMethod("getInstance").invoke(null);
 
@@ -85,6 +66,10 @@ public class RequestHandler {
         try {
             String packageName = "controller";
             InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream(packageName);
+
+            if (stream == null)
+                throw new RuntimeException();
+
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 
             Set<Class<?>> classes = reader.lines()
@@ -109,37 +94,4 @@ public class RequestHandler {
             e.printStackTrace();
         }
     }
-
-    private boolean validateSession(Method method, Request request) throws RemoteException, NotBoundException {
-        if (!method.getAnnotation(Path.class)._public()) {
-            if (request.getHeaders().get("token") == null)
-                return false;
-
-            IAuthentication auth = (IAuthentication) LocateRegistry
-                    .getRegistry(Registry.REGISTRY_PORT)
-                    .lookup("auth");
-
-            return auth.validate((String) request.getHeaders().get("token"));
-        }
-
-        return true;
-    }
-
-//    private boolean checkIntegrity(Request request) {
-//        if (bypassHmac.contains(request.getPath()))
-//            return true;
-//
-//        String number = (String) request.getBody().get("account-number");
-//        Account account = accountService.findAccount(number);
-//
-//        try {
-//            String sign = (String) request.getHeaders().get("sign");
-//            request.removeHeader("sign");
-//            String calc = CryptographyService.sign(request, account.getHmacKey());
-//
-//            return sign.equals(calc);
-//        } catch (Exception e) {
-//            return false;
-//        }
-//    }
 }

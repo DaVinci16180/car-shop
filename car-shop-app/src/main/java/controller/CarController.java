@@ -1,14 +1,10 @@
 package controller;
 
-import model.Car;
 import network.annotations.Controller;
 import network.annotations.Path;
-import repository.CarRepository;
 import service.CarService;
 import src.main.java.Request;
 import src.main.java.Response;
-
-import java.util.List;
 
 @Controller(path = "car")
 public class CarController {

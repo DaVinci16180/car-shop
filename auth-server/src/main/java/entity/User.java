@@ -3,7 +3,7 @@ package entity;
 import src.main.java.CryptographyService;
 
 import javax.crypto.SecretKey;
-import java.util.Objects;
+import java.time.LocalDateTime;
 
 public class User {
 
@@ -13,11 +13,13 @@ public class User {
 
     private final String username;
     private String password;
+    private SecretKey hmac;
 
     private String name;
     private final Role role;
 
-    private SecretKey hmac;
+    private int failedLoginAttempts = 0;
+    private LocalDateTime loginCooldown;
 
     protected User(String username, String password, String name, Role role) {
         this.username = username;
@@ -57,6 +59,29 @@ public class User {
 
     public void setHmac(SecretKey hmac) {
         this.hmac = hmac;
+    }
+
+    public int getFailedLoginAttempts() {
+        return failedLoginAttempts;
+    }
+
+    public void setFailedLoginAttempts(int failedLoginAttempts) {
+        this.failedLoginAttempts = failedLoginAttempts;
+    }
+
+    public void incrementFailedLoginAttempts() {
+        if (++this.failedLoginAttempts == 3) {
+            setLoginCooldown(LocalDateTime.now().plusSeconds(30));
+            this.failedLoginAttempts = 0;
+        }
+    }
+
+    public LocalDateTime getLoginCooldown() {
+        return loginCooldown;
+    }
+
+    public void setLoginCooldown(LocalDateTime loginCooldown) {
+        this.loginCooldown = loginCooldown;
     }
 
     @Override

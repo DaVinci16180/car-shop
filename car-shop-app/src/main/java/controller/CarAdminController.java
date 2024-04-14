@@ -4,18 +4,11 @@ import model.Car;
 import network.annotations.Controller;
 import network.annotations.Path;
 import repository.CarRepository;
-import src.main.java.IAuthentication;
 import src.main.java.Request;
 import src.main.java.Response;
 
-import java.math.BigDecimal;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-
 @Controller(path = "car-admin")
 public class CarAdminController {
-
 
     private static class InstanceHolder {
         private static final CarAdminController instance = new CarAdminController();
@@ -26,28 +19,11 @@ public class CarAdminController {
     }
 
     CarRepository carRepository = CarRepository.getInstance();
-    IAuthentication auth;
 
-    private CarAdminController() {
-        try {
-            auth = (IAuthentication) LocateRegistry
-                    .getRegistry(Registry.REGISTRY_PORT)
-                    .lookup("auth");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private CarAdminController() {}
 
     @Path(value = "add")
     public Object addCar(Request request) {
-        try {
-            String token = (String) request.getHeaders().get("token");
-            if (!auth.hasRole(token, new String[] { "ADMIN" }))
-                return Response.fail();
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-
         String name = String.valueOf(request.getBody().get("name"));
         String registration = String.valueOf(request.getBody().get("registration"));
         int year = (int) request.getBody().get("year");
@@ -74,14 +50,6 @@ public class CarAdminController {
 
     @Path(value = "delete")
     public Object deleteCar(Request request) {
-        try {
-            String token = (String) request.getHeaders().get("token");
-            if (!auth.hasRole(token, new String[] { "ADMIN" }))
-                return Response.fail();
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-
         int id = (int) request.getBody().get("id");
         carRepository.delete(id);
 
@@ -90,14 +58,6 @@ public class CarAdminController {
 
     @Path(value = "update")
     public Object updateCar(Request request) {
-        try {
-            String token = (String) request.getHeaders().get("token");
-            if (!auth.hasRole(token, new String[] { "ADMIN" }))
-                return Response.fail();
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-
         int id = (int) request.getBody().get("id");
         int year = (int) request.getBody().get("year");
         int category = (int) request.getBody().get("category");
@@ -125,6 +85,8 @@ public class CarAdminController {
 
         if (price > 0)
             car.setPrice(price);
+
+        carRepository.update(car);
 
         return Response.success();
     }

@@ -2,7 +2,6 @@ package menus;
 
 import actions.CarActions;
 import actions.UserActions;
-import network.LocalStorage;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -10,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 public class AdminMenus {
-    private static final LocalStorage storage = LocalStorage.getInstance();
-
     public static void adminOptions(boolean search) {
         List<Integer> ids = new ArrayList<>();
         String query = null;

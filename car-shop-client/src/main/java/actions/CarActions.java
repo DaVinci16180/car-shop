@@ -5,10 +5,8 @@ import network.LocalStorage;
 import src.main.java.Request;
 import src.main.java.Response;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class CarActions {
 
@@ -61,7 +59,7 @@ public class CarActions {
         request.addBody("category", category);
         request.addBody("registration", registration);
 
-        client.execute(request, false);
+        client.execute(request, true);
     }
 
     public static Map<String, Object> details(int id) {

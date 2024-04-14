@@ -3,13 +3,8 @@ package controller;
 import network.annotations.Controller;
 import network.annotations.Path;
 import repository.CarRepository;
-import src.main.java.IAuthentication;
 import src.main.java.Request;
 import src.main.java.Response;
-
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
 @Controller(path = "car-customer")
 public class CarCustomerController {
@@ -23,28 +18,11 @@ public class CarCustomerController {
     }
 
     CarRepository carRepository = CarRepository.getInstance();
-    IAuthentication auth;
 
-    private CarCustomerController() {
-        try {
-            auth = (IAuthentication) LocateRegistry
-                    .getRegistry(Registry.REGISTRY_PORT)
-                    .lookup("auth");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private CarCustomerController() {}
 
     @Path("buy")
-    public Object buy(Request request) {
-        try {
-            String token = (String) request.getHeaders().get("token");
-            if (!auth.hasRole(token, new String[] { "CUSTOMER" }))
-                return Response.fail();
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-
+    public synchronized Object buy(Request request) {
         int id = (int) request.getBody().get("id");
         carRepository.delete(id);
 

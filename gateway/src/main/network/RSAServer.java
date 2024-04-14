@@ -1,4 +1,4 @@
-package network;
+package main.network;
 
 import src.main.java.CryptographyService;
 
@@ -12,7 +12,6 @@ import java.security.PrivateKey;
 public class RSAServer implements Runnable {
     private static final KeyPair keyPair = CryptographyService.generateKeyPair();
     private final ServerSocket serverSocket;
-    private boolean running = true;
 
     public RSAServer(int port) throws IOException {
         serverSocket = new ServerSocket(port);
@@ -21,7 +20,7 @@ public class RSAServer implements Runnable {
     @Override
     public void run() {
         try {
-            while (running) {
+            while (true) {
                 Socket requester = serverSocket.accept();
 
                 new Thread(() -> {
@@ -38,11 +37,6 @@ public class RSAServer implements Runnable {
         } catch (IOException e) {
             System.out.println("Servidor encerrado.");
         }
-    }
-
-    public void shutDown() throws IOException {
-        serverSocket.close();
-        running = false;
     }
 
     public static PrivateKey getPrivateKey() {

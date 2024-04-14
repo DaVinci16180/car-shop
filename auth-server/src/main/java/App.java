@@ -6,12 +6,13 @@ import entity.Administrator;
 import entity.Customer;
 import entity.User;
 import service.AuthenticationService;
+import src.main.java.CryptographyService;
 import src.main.java.IAuthentication;
-import storage.DataBase;
+import storage.Storage;
 
 public class App {
 
-    static DataBase db = DataBase.getInstance();
+    static Storage storage = Storage.getInstance();
 
     public static void main(String[] args) {
         try {
@@ -34,10 +35,10 @@ public class App {
     }
 
     public static void setup() {
-        User admin = new Administrator("admin", "admin", "Administrador");
-        User customer = new Customer("joseitamar", "senha123", "José Itamar");
+        User admin = new Administrator("admin", CryptographyService.hashPassword("admin"), "Administrador");
+        User customer = new Customer("joseitamar", CryptographyService.hashPassword("senha123"), "José Itamar");
 
-        db.saveUser(admin);
-        db.saveUser(customer);
+        storage.saveUser(admin);
+        storage.saveUser(customer);
     }
 }

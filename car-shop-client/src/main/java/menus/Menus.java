@@ -70,11 +70,6 @@ public class Menus {
         }
     }
 
-    private static void details(int id) {
-        if (storage.userRole.equals("ADMIN"))
-            AdminMenus.details(id);
-    }
-
     private static void userData() {
         if (storage.token == null) {
             System.out.println();
@@ -97,8 +92,8 @@ public class Menus {
         // Apenas para depuração
         if (storage.hmac == null)
             UserActions.configureHmac(username, password);
-
-        UserActions.login(username, password);
+        else
+            UserActions.login(username, password);
     }
 
     private static void register() {
@@ -210,26 +205,6 @@ public class Menus {
             case RIGHT -> {
                 System.out.format(String.format(" %1$" + spaces + "s", ""));
                 System.out.print(text + " ");
-            }
-        }
-    }
-
-    public static void repeat(char ch, int times, boolean br) {
-        System.out.print(String.format("%1$" + times + "s", "").replace(' ', ch));
-        if (br)
-            System.out.println();
-    }
-
-    public static void padding(int size) {
-        System.out.format("%1$" + size + "s", "");
-    }
-
-    private static BigDecimal readNumber() {
-        while (true) {
-            try {
-                return new BigDecimal(scanner.nextLine());
-            } catch (Exception ignored) {
-                System.out.print("Erro - insira um número válido -> ");
             }
         }
     }

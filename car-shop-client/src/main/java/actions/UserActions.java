@@ -6,10 +6,6 @@ import src.main.java.Request;
 import src.main.java.Response;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 public class UserActions {
     private static final LocalStorage storage = LocalStorage.getInstance();
@@ -64,7 +60,11 @@ public class UserActions {
         request.addBody("password", password);
 
         Response response = client.execute(request, false);
+
         storage.hmac = (SecretKey) response.getBody().get("hmac");
+        storage.token = (String) response.getBody().get("token");
+        storage.userName = (String) response.getBody().get("user-name");
+        storage.userRole = (String) response.getBody().get("user-role");
     }
 
     public static void logout() {
@@ -82,8 +82,6 @@ public class UserActions {
         request.setPath("car-customer/buy");
         request.addBody("id", id);
 
-        Response response = client.execute(request, false);
-
-        return ;
+        Response response = client.execute(request, true);
     }
 }

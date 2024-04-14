@@ -25,9 +25,8 @@ public class Car {
     private double price;
     private Category category;
 
-    public Car() {}
-
     public Car(Builder builder) {
+        this.id = builder.id;
         this.name = builder.name;
         this.year = builder.year;
         this.price = builder.price;
@@ -36,11 +35,17 @@ public class Car {
     }
 
     public static class Builder {
+        private int id;
         private String name;
         private String registration;
         private int year;
         private double price;
         private Category category;
+
+        public Builder id(int id) {
+            this.id = id;
+            return this;
+        }
 
         public Builder name(String name) {
             this.name = name;

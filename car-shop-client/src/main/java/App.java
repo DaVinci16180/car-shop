@@ -5,6 +5,12 @@ public class App {
 
     private static final LocalStorage storage = LocalStorage.getInstance();
 
+    /*
+    -> Simule um cliente que tem duas requisições bloqueadas pelo firewall.
+        => Sendo uma que tente acessar a base de dados diretamente.
+        => E a outra, que tente acessar um Backdoor instalado clandestinamente.
+     */
+
     public static void main(String[] args) {
         while (true) {
             try {

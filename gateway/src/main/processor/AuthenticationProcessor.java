@@ -1,31 +1,22 @@
-package controller;
+package main.processor;
 
-import network.annotations.Controller;
-import network.annotations.Path;
 import src.main.java.IAuthentication;
 import src.main.java.Request;
 import src.main.java.Response;
 
 import javax.crypto.SecretKey;
+import java.nio.file.AccessDeniedException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Map;
+import java.util.function.Function;
 
-@Controller(path = "user")
-public class UserController {
+public class AuthenticationProcessor implements Function<Request, Response> {
 
-    private static class InstanceHolder {
-        private static final UserController instance = new UserController();
-    }
+    private final IAuthentication auth;
 
-    public static UserController getInstance() {
-        return UserController.InstanceHolder.instance;
-    }
-
-    IAuthentication auth;
-
-    private UserController() {
+    public AuthenticationProcessor() {
         try {
             auth = (IAuthentication) LocateRegistry
                     .getRegistry(Registry.REGISTRY_PORT)
@@ -35,8 +26,43 @@ public class UserController {
         }
     }
 
-    @Path(value = "login", _public = true)
-    public Object login(Request request) {
+    @Override
+    public Response apply(Request request) {
+        return switch (request.getPath()) {
+            case "user/login"         -> signIn(request);
+            case "user/register"      -> signUp(request);
+            case "user/configureHmac" -> hmac(request);
+            case "user/logout"        -> signOut(request);
+            default                   -> Response.fail();
+        };
+    }
+
+    private Response hmac(Request request) {
+        String username = (String) request.getBody().get("username");
+        String password = (String) request.getBody().get("password");
+
+        try {
+            String token = auth.signIn(username, password);
+            SecretKey hmac = auth.getHmac(token);
+            Map<String, String> data = auth.getUserData(token);
+
+            Response response = Response.success();
+            response.addBody("hmac", hmac);
+            response.addBody("token", token);
+            response.addBody("user-name", data.get("name"));
+            response.addBody("user-role", data.get("role"));
+
+            return response;
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        } catch (AccessDeniedException e) {
+            Response response = Response.fail();
+            response.addBody("message", e.getMessage());
+            return response;
+        }
+    }
+
+    private Response signIn(Request request) {
         String username = String.valueOf(request.getBody().get("username"));
         String password = String.valueOf(request.getBody().get("password"));
 
@@ -49,6 +75,10 @@ public class UserController {
             role = data.get("role");
         } catch (RemoteException e) {
             throw new RuntimeException(e);
+        } catch (AccessDeniedException e) {
+            Response response = Response.fail();
+            response.addBody("message", e.getMessage());
+            return response;
         }
 
         Response response = Response.success();
@@ -59,8 +89,7 @@ public class UserController {
         return response;
     }
 
-    @Path(value = "register", _public = true)
-    public Object register(Request request) {
+    private Response signUp(Request request) {
         String name = String.valueOf(request.getBody().get("name"));
         String username = String.valueOf(request.getBody().get("username"));
         String password = String.valueOf(request.getBody().get("password"));
@@ -83,8 +112,7 @@ public class UserController {
         return response;
     }
 
-    @Path(value = "logout")
-    public Object logout(Request request) {
+    private Response signOut(Request request) {
         String token = String.valueOf(request.getBody().get("token"));
 
         try {
@@ -96,30 +124,4 @@ public class UserController {
         return Response.success();
     }
 
-    /**
-     * Da forma que está implementado, o usuário só tem
-     * acesso à chave Hmac no ato do cadastro de uma nova
-     * conta. Além disso, o login exige assinatura. Devido
-     * a isso, as contas criadas no setup inicial não
-     * possuirão uma chave e não poderão ser acessadas.
-     * Este método, usado apenas para depuração, cria e
-     * retorna uma chave Hmac para essas contas.
-     */
-    @Path(value = "configureHmac", _public = true)
-    public Object configureHmac(Request request) {
-        String username = (String) request.getBody().get("username");
-        String password = (String) request.getBody().get("password");
-
-        try {
-            String token = auth.signIn(username, password);
-            SecretKey hmac = auth.getHmac(token);
-
-            Response response = Response.success();
-            response.addBody("hmac", hmac);
-
-            return response;
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
