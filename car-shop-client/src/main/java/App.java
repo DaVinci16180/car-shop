@@ -1,5 +1,4 @@
 import menus.Menus;
-import network.DiscoveryClient;
 import network.LocalStorage;
 
 public class App {
@@ -15,10 +14,8 @@ public class App {
     public static void main(String[] args) {
         while (true) {
             try {
-                DiscoveryClient discovery = new DiscoveryClient();
-                discovery.discover();
-
                 Menus.main(false);
+            } catch (Error ignored) {
             } catch (SecurityException e) {
                 storage.reset();
                 storage.error = true;

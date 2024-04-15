@@ -1,10 +1,8 @@
 package main;
 
-import main.network.DiscoveryServer;
-import main.network.RSAServer;
-import main.network.Server;
-
-import java.io.IOException;
+import main.server.DiscoveryServer;
+import main.server.RSAServer;
+import main.server.Server;
 
 public class App {
     public static void main(String[] args) {
@@ -14,7 +12,7 @@ public class App {
             new Thread(new DiscoveryServer()).start();
 
             System.out.println("Gateway online.");
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

@@ -1,5 +1,7 @@
-package main.network;
+package main.server;
 
+import main.network.Firewall;
+import main.network.RequestHandler;
 import src.main.java.CryptographyService;
 import src.main.java.Package;
 import src.main.java.Request;
@@ -11,6 +13,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.AccessDeniedException;
 import java.security.PublicKey;
 
 public class Server implements Runnable{
@@ -35,13 +38,20 @@ public class Server implements Runnable{
                         ObjectOutputStream out = new ObjectOutputStream(requester.getOutputStream());
 
                         Request request = getRequest(in);
-                        Response response = handler.handle(request);
-
                         PublicKey userKey = (PublicKey) request.getHeaders().get("rsa-public-key");
+
+                        Response response;
+                        try {
+                            Firewall.monitor(requester);
+                            response = handler.handle(request);
+                        } catch (AccessDeniedException e) {
+                            response = Response.fail();
+                            response.addBody("message", e.getMessage());
+                        }
+
                         Package pack = generatePackage(response, userKey);
 
                         out.writeObject(pack);
-                        out.flush();
 
                         try {
                             in.close();

@@ -4,7 +4,6 @@ import actions.CarActions;
 import actions.UserActions;
 import network.LocalStorage;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -12,6 +11,7 @@ public class Menus {
 
     static final Scanner scanner = new Scanner(System.in);
     private static final LocalStorage storage = LocalStorage.getInstance();
+    private static boolean pause = false;
 
     public static void main(boolean search) {
         while (true) {
@@ -115,6 +115,7 @@ public class Menus {
         System.out.println();
 
         List<Map<String, Object>> cars;
+
         if (filter == null || filter.isBlank())
             cars = CarActions.list();
         else
@@ -168,11 +169,24 @@ public class Menus {
         error();
         sign();
         userData();
+
+        if (pause) {
+            pause = false;
+            System.out.print("Pressione Enter para recarregar a página -> ");
+            scanner.nextLine();
+
+            System.out.println("grep=cls");
+            sign();
+            userData();
+        }
+
     }
 
     private static void error() {
         if (storage.error) {
             div("Erro - " + storage.errorMessage, 50, Alignment.CENTER);
+            pause = true;
+
             storage.resetError();
         }
 

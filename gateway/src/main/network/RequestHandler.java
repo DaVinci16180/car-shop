@@ -4,7 +4,6 @@ import src.main.java.IAuthentication;
 import src.main.java.Request;
 import src.main.java.Response;
 
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -32,8 +31,6 @@ public class RequestHandler {
     }
 
     public Response handle(Request request) {
-        // passa pelo firewall
-
         URL.Route route = URL.routes.get(request.getPath());
         if (!checkRequest(request, route))
             return Response.fail();
@@ -45,7 +42,9 @@ public class RequestHandler {
                     .newInstance()
                     .apply(request);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            Response response = Response.fail();
+            response.addBody("message", e.getMessage());
+            return response;
         }
     }
 
@@ -72,7 +71,7 @@ public class RequestHandler {
         return auth.hasRole(token, new String[] { route.permission() });
     }
 
-    private boolean validateSession(Request request, URL.Route route) throws RemoteException, NotBoundException {
+    private boolean validateSession(Request request, URL.Route route) throws RemoteException {
         if (route.is_public())
             return true;
 

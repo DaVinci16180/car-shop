@@ -1,5 +1,6 @@
 package network;
 
+import network.discovery.DiscoveryClient;
 import src.main.java.Request;
 import src.main.java.Response;
 
@@ -13,21 +14,26 @@ public class Server implements Runnable{
 
     private final ServerSocket serverSocket;
     private final RequestHandler handler = RequestHandler.getInstance();
+    public static Integer port;
 
-    public Server(int port) throws IOException {
-        serverSocket = new ServerSocket(port);
+    public Server() throws IOException {
+        serverSocket = new ServerSocket(0);
+        port = serverSocket.getLocalPort();
     }
 
     @Override
     public void run() {
         try {
+            new DiscoveryClient().accept(port);
+            Class.forName("network.discovery.DeregisterHeartbeat");
+
             while (true) {
                 Socket requester = serverSocket.accept();
 
                 Thread thread = new Thread(() -> {
-                    Firewall.checkConnection(requester);
-
                     try {
+                        Firewall.monitor(requester);
+
                         ObjectInputStream in = new ObjectInputStream(requester.getInputStream());
                         ObjectOutputStream out = new ObjectOutputStream(requester.getOutputStream());
 
@@ -47,7 +53,7 @@ public class Server implements Runnable{
 
                 thread.start();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("Servidor encerrado.");
         }
     }

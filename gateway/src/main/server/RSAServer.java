@@ -1,4 +1,4 @@
-package main.network;
+package main.server;
 
 import src.main.java.CryptographyService;
 

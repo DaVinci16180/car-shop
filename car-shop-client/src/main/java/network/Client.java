@@ -24,11 +24,15 @@ public class Client {
 
     private final LocalStorage storage = LocalStorage.getInstance();
 
+    private static final String serverAddress = "0.0.0.0";
+    private static final int serverPort = 8080;
+    private static final int rsaServerPort = 8081;
+
     private Client() {}
 
     public Response execute(Request request, boolean sign) {
         verifyServerKey();
-        try(Socket socket = new Socket(DiscoveryClient.serverAddress, DiscoveryClient.serverPort)) {
+        try(Socket socket = new Socket(serverAddress, serverPort)) {
             if (sign && storage.hmac == null) {
                 storage.error = true;
                 throw new SecurityException("Chave de acesso (Hmac) não configurada.");
@@ -64,6 +68,8 @@ public class Client {
             if (!success) {
                 storage.error = true;
                 storage.errorMessage = (String) response.getBody().get("message");
+
+                throw new Error();
             }
 
             return response;
@@ -74,7 +80,7 @@ public class Client {
 
     private void verifyServerKey() {
         if (storage.serverPublicKey == null) {
-            try (Socket socket = new Socket(DiscoveryClient.serverAddress, DiscoveryClient.rsaServerPort);
+            try (Socket socket = new Socket(serverAddress, rsaServerPort);
                 ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
                 storage.serverPublicKey = (PublicKey) inputStream.readObject();
             } catch (IOException | ClassNotFoundException e) {

@@ -5,7 +5,6 @@ import src.main.java.Response;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -21,7 +20,7 @@ public class Client {
 
     private Client() {}
 
-    public Response execute(Request request, int targetPort) throws ConnectException {
+    public Response execute(Request request, int targetPort) {
         try(Socket socket = new Socket(InetAddress.getLocalHost(), targetPort)) {
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             out.writeObject(request);
@@ -34,8 +33,6 @@ public class Client {
             in.close();
 
             return response;
-        } catch (ConnectException e) {
-            throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
