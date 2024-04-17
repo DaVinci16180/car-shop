@@ -11,9 +11,7 @@ CREATE TABLE car (
     category varchar NOT NULL
 );
 
-INSERT INTO car (name, registration, year, price, category)
-VALUES
-('Ford Ka', '123978612', 2004, 4500, 'ECONOMIC'),
+INSERT INTO car (name, registration, year, price, category) VALUES ('Ford Ka', '123978612', 2004, 4500, 'ECONOMIC'),
 ('Chevrolet Onix', '498274301', 2016, 32025.66, 'ECONOMIC'),
 ('Hyundai HB20', '943837294', 2020, 56935.20, 'ECONOMIC'),
 ('Fiat Uno', '019238429', 2007, 5000, 'ECONOMIC'),

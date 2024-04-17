@@ -10,7 +10,7 @@ public class Firewall {
         try {
             String localhost = InetAddress.getLocalHost().getHostAddress();
 
-            if (!requester.getInetAddress().getHostAddress().equals(localhost))
+            if (requester.getInetAddress().getHostAddress().equals(localhost))
                 throw new AccessDeniedException("Bloqueado pela politica de CORS.");
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);

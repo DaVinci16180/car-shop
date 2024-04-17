@@ -78,6 +78,23 @@ public class Client {
         }
     }
 
+    public Response execute(Request request, int port) {
+        try(Socket socket = new Socket(serverAddress, port)) {
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            out.writeObject(request);
+
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+            Response response = (Response) in.readObject();
+
+            in.close();
+            out.close();
+
+            return response;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void verifyServerKey() {
         if (storage.serverPublicKey == null) {
             try (Socket socket = new Socket(serverAddress, rsaServerPort);

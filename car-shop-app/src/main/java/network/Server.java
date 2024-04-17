@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.AccessDeniedException;
 
 public class Server implements Runnable{
 
@@ -19,6 +20,7 @@ public class Server implements Runnable{
     public Server() throws IOException {
         serverSocket = new ServerSocket(0);
         port = serverSocket.getLocalPort();
+        System.out.println("Servidor iniciado na porta " + port);
     }
 
     @Override
@@ -32,10 +34,21 @@ public class Server implements Runnable{
 
                 Thread thread = new Thread(() -> {
                     try {
-                        Firewall.monitor(requester);
-
                         ObjectInputStream in = new ObjectInputStream(requester.getInputStream());
                         ObjectOutputStream out = new ObjectOutputStream(requester.getOutputStream());
+
+                        try {
+                            Firewall.monitor(requester);
+                        } catch (AccessDeniedException e) {
+                            Response response = Response.fail();
+                            response.addBody("message", e.getMessage());
+
+                            out.writeObject(response);
+                            out.close();
+                            requester.close();
+
+                            throw e;
+                        }
 
                         Request request = (Request) in.readObject();
                         Response response = handler.handle(request);

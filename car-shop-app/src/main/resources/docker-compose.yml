@@ -1,0 +1,35 @@
+services:
+  master:
+    image: postgres
+    container_name: pg_master
+    volumes:
+      - pg_master-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_PASSWORD: senha123
+    restart: always
+  replica1:
+    image: postgres
+    container_name: pg_replica1
+    volumes:
+      - pg_replica1-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_PASSWORD: senha123
+    restart: always
+  replica2:
+    image: postgres
+    container_name: pg_replica2
+    volumes:
+      - pg_replica2-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_PASSWORD: senha123
+    restart: always
+volumes:
+  pg_master-data:
+    name: pg_master-data
+  pg_replica1-data:
+    name: pg_replica1-data
+  pg_replica2-data:
+    name: pg_replica2-data

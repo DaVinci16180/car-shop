@@ -4,6 +4,8 @@
       <root url="jar://$PROJECT_DIR$/../serializable/out/artifacts/serializable_jar/serializable.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../serializable/out/artifacts/serializable_jar/serializable.jar!/" />
+    </SOURCES>
   </library>
 </component>

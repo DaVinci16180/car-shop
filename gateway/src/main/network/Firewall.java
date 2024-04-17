@@ -17,7 +17,7 @@ public class Firewall {
     private static final InetAddress clientAddress;
     static {
         try {
-            clientAddress = InetAddress.getByName("192.168.0.6");
+            clientAddress = InetAddress.getByName("192.168.0.10");
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
